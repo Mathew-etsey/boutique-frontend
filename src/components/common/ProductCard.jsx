@@ -1,5 +1,6 @@
 import React from 'react'
 import { Link } from 'react-router-dom'
+import { getImageUrl } from '../../services/api'
 
 const STOCK_STYLES = {
   in_stock: { dot: 'bg-emerald-700', text: 'text-ink/50' },
@@ -8,13 +9,7 @@ const STOCK_STYLES = {
 }
 
 const ProductCard = ({ product }) => {
-  // ✅ Helper function to get image URL
-  const getImageUrl = (imagePath) => {
-    if (!imagePath) return null
-    const baseUrl = import.meta.env.VITE_API_URL.replace('/api', '')
-    return `${baseUrl}/storage/${imagePath}`
-  }
-
+  // ✅ Use the helper function from api.js
   const imageUrl = product.images && product.images.length > 0
     ? getImageUrl(product.images[0].image_url)
     : null
