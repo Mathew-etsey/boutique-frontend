@@ -3,16 +3,10 @@ import { Link } from 'react-router-dom'
 import { useCart } from '../../context/CartContext'
 import { TrashIcon, PlusIcon, MinusIcon } from '@heroicons/react/24/outline'
 import Reveal from '../common/Reveal'
+import { getImageUrl } from '../../services/api'
 
 const Cart = () => {
   const { cartItems, removeFromCart, updateQuantity, cartTotal, clearCart } = useCart()
-
-  // ✅ Helper function to get image URL
-  const getImageUrl = (imagePath) => {
-    if (!imagePath) return null
-    const baseUrl = import.meta.env.VITE_API_URL.replace('/api', '')
-    return `${baseUrl}/storage/${imagePath}`
-  }
 
   if (cartItems.length === 0) {
     return (

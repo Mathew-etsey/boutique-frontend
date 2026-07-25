@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
-import api from '../../services/api'
+import api, { getImageUrl } from '../../services/api'
 import { PlusIcon, PencilIcon, TrashIcon } from '@heroicons/react/24/outline'
 import toast from 'react-hot-toast'
 
@@ -13,13 +13,6 @@ const stockStyle = (qty) => {
 const AdminProducts = () => {
   const [products, setProducts] = useState([])
   const [loading, setLoading] = useState(true)
-
-  // ✅ Helper function to get image URL
-  const getImageUrl = (imagePath) => {
-    if (!imagePath) return null
-    const baseUrl = import.meta.env.VITE_API_URL.replace('/api', '')
-    return `${baseUrl}/storage/${imagePath}`
-  }
 
   useEffect(() => {
     fetchProducts()

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
-import api from '../../services/api'
+import api, { getImageUrl } from '../../services/api'
 import toast from 'react-hot-toast'
 
 const AdminProductForm = () => {
@@ -20,13 +20,6 @@ const AdminProductForm = () => {
   })
   const [imagePreview, setImagePreview] = useState(null)
   const [existingImage, setExistingImage] = useState(null)
-
-  // ✅ Helper function to get image URL
-  const getImageUrl = (imagePath) => {
-    if (!imagePath) return null
-    const baseUrl = import.meta.env.VITE_API_URL.replace('/api', '')
-    return `${baseUrl}/storage/${imagePath}`
-  }
 
   useEffect(() => {
     const fetchCategories = async () => {

@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
-import api from '../../services/api'
+import api, { getImageUrl } from '../../services/api'
 import MarqueeTicker from '../common/MarqueeTicker'
 import Reveal from '../common/Reveal'
 import { ChevronRightIcon } from '@heroicons/react/24/outline'
@@ -29,13 +29,6 @@ const Home = () => {
     }
     fetchProducts()
   }, [])
-
-  // ✅ Helper function to get image URL
-  const getImageUrl = (imagePath) => {
-    if (!imagePath) return null
-    const baseUrl = import.meta.env.VITE_API_URL.replace('/api', '')
-    return `${baseUrl}/storage/${imagePath}`
-  }
 
   return (
     <div className="bg-bone min-h-screen">

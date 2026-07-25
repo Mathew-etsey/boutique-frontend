@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { useParams, Link } from 'react-router-dom'
 import { useNavigate } from 'react-router-dom'
-import api from '../../services/api'
+import api, { getImageUrl } from '../../services/api'
 import { HeartIcon, ShoppingCartIcon } from '@heroicons/react/24/outline'
 import { HeartIcon as HeartSolidIcon } from '@heroicons/react/24/solid'
 import toast from 'react-hot-toast'
@@ -25,13 +25,6 @@ const ProductDetails = () => {
   const [quantity, setQuantity] = useState(1)
   const [isInWishlist, setIsInWishlist] = useState(false)
   const [mainImage, setMainImage] = useState('')
-
-  // ✅ Helper function to get image URL
-  const getImageUrl = (imagePath) => {
-    if (!imagePath) return null
-    const baseUrl = import.meta.env.VITE_API_URL.replace('/api', '')
-    return `${baseUrl}/storage/${imagePath}`
-  }
 
   useEffect(() => {
     fetchProduct()
