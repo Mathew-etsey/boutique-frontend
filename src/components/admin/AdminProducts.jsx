@@ -14,6 +14,13 @@ const AdminProducts = () => {
   const [products, setProducts] = useState([])
   const [loading, setLoading] = useState(true)
 
+  // ✅ Helper function to get image URL
+  const getImageUrl = (imagePath) => {
+    if (!imagePath) return null
+    const baseUrl = import.meta.env.VITE_API_URL.replace('/api', '')
+    return `${baseUrl}/storage/${imagePath}`
+  }
+
   useEffect(() => {
     fetchProducts()
   }, [])
@@ -92,9 +99,8 @@ const AdminProducts = () => {
                   <td className="py-3 px-4">
                     <div className="flex items-center gap-3">
                       {product.images && product.images.length > 0 ? (
-                        // ✅ FIX: Use environment variable for image URL
                         <img
-                          src={`${import.meta.env.VITE_API_URL}/storage/${product.images[0].image_url}`}
+                          src={getImageUrl(product.images[0].image_url)}
                           alt={product.name}
                           className="w-11 h-11 object-cover rounded-sm flex-shrink-0 border border-ink/10"
                         />
@@ -145,9 +151,8 @@ const AdminProducts = () => {
             <div key={product.id} className="bg-white border border-ink/10 rounded-sm p-4">
               <div className="flex items-center gap-3">
                 {product.images && product.images.length > 0 ? (
-                  // ✅ FIX: Use environment variable for image URL
                   <img
-                    src={`${import.meta.env.VITE_API_URL}/storage/${product.images[0].image_url}`}
+                    src={getImageUrl(product.images[0].image_url)}
                     alt={product.name}
                     className="w-16 h-16 object-cover rounded-sm flex-shrink-0 border border-ink/10"
                   />

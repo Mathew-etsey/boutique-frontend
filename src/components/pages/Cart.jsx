@@ -7,6 +7,13 @@ import Reveal from '../common/Reveal'
 const Cart = () => {
   const { cartItems, removeFromCart, updateQuantity, cartTotal, clearCart } = useCart()
 
+  // ✅ Helper function to get image URL
+  const getImageUrl = (imagePath) => {
+    if (!imagePath) return null
+    const baseUrl = import.meta.env.VITE_API_URL.replace('/api', '')
+    return `${baseUrl}/storage/${imagePath}`
+  }
+
   if (cartItems.length === 0) {
     return (
       <div className="min-h-screen bg-bone flex items-center justify-center px-6">
@@ -56,9 +63,8 @@ const Cart = () => {
                 {/* Product Image */}
                 <div className="w-24 h-24 bg-ink/5 overflow-hidden flex-shrink-0 border border-ink/10">
                   {item.image ? (
-                    // ✅ FIX: Use environment variable for image URL
                     <img
-                      src={`${import.meta.env.VITE_API_URL}/storage/${item.image}`}
+                      src={getImageUrl(item.image)}
                       alt={item.name}
                       className="w-full h-full object-cover"
                     />

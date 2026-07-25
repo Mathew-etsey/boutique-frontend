@@ -8,10 +8,17 @@ const STOCK_STYLES = {
 }
 
 const ProductCard = ({ product }) => {
-  // ✅ FIX: Use environment variable for image URL
+  // ✅ Helper function to get image URL
+  const getImageUrl = (imagePath) => {
+    if (!imagePath) return null
+    const baseUrl = import.meta.env.VITE_API_URL.replace('/api', '')
+    return `${baseUrl}/storage/${imagePath}`
+  }
+
   const imageUrl = product.images && product.images.length > 0
-    ? `${import.meta.env.VITE_API_URL}/storage/${product.images[0].image_url}`
+    ? getImageUrl(product.images[0].image_url)
     : null
+
   const stock = product.stock_status
   const stockStyle = stock ? (STOCK_STYLES[stock.status] || STOCK_STYLES.in_stock) : null
 

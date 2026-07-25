@@ -19,7 +19,6 @@ const Home = () => {
           api.get('/public/featured'),
           api.get('/public/new-arrivals')
         ])
-        // ✅ Only take first 4 products
         setFeatured(featuredRes.data.data?.slice(0, 4) || [])
         setNewArrivals(newRes.data.data?.slice(0, 4) || [])
         setLoading(false)
@@ -30,6 +29,13 @@ const Home = () => {
     }
     fetchProducts()
   }, [])
+
+  // ✅ Helper function to get image URL
+  const getImageUrl = (imagePath) => {
+    if (!imagePath) return null
+    const baseUrl = import.meta.env.VITE_API_URL.replace('/api', '')
+    return `${baseUrl}/storage/${imagePath}`
+  }
 
   return (
     <div className="bg-bone min-h-screen">
@@ -85,9 +91,7 @@ const Home = () => {
         ) : featured.length > 0 ? (
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-5 md:gap-6">
             {featured.map((product, index) => {
-              const imageUrl = product.images?.[0]?.image_url
-                ? `${import.meta.env.VITE_API_URL}/storage/${product.images[0].image_url}`
-                : null
+              const imageUrl = getImageUrl(product.images?.[0]?.image_url)
 
               return (
                 <Reveal key={product.id} delay={index * 70}>
@@ -131,7 +135,6 @@ const Home = () => {
           <p className="text-center font-mono text-sm text-ink/50">No featured products yet</p>
         )}
 
-        {/* ✅ View All Products Button */}
         <div className="text-center mt-10">
           <Link
             to="/shop"
@@ -223,9 +226,7 @@ const Home = () => {
         ) : newArrivals.length > 0 ? (
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-5 md:gap-6">
             {newArrivals.map((product, index) => {
-              const imageUrl = product.images?.[0]?.image_url
-                ? `${import.meta.env.VITE_API_URL}/storage/${product.images[0].image_url}`
-                : null
+              const imageUrl = getImageUrl(product.images?.[0]?.image_url)
 
               return (
                 <Reveal key={product.id} delay={index * 70}>
@@ -268,7 +269,6 @@ const Home = () => {
           <p className="text-center font-mono text-sm text-ink/50">No new arrivals yet</p>
         )}
 
-        {/* ✅ View All Products Button */}
         <div className="text-center mt-10">
           <Link
             to="/shop"

@@ -26,6 +26,13 @@ const ProductDetails = () => {
   const [isInWishlist, setIsInWishlist] = useState(false)
   const [mainImage, setMainImage] = useState('')
 
+  // ✅ Helper function to get image URL
+  const getImageUrl = (imagePath) => {
+    if (!imagePath) return null
+    const baseUrl = import.meta.env.VITE_API_URL.replace('/api', '')
+    return `${baseUrl}/storage/${imagePath}`
+  }
+
   useEffect(() => {
     fetchProduct()
     window.scrollTo(0, 0)
@@ -116,10 +123,9 @@ const ProductDetails = () => {
           <div className="animate-fade-up">
             <div className="bg-white border border-ink/10 p-3">
               <div className="relative aspect-square overflow-hidden bg-ink/5">
-                {/* ✅ FIX: Use environment variable for main image */}
                 <img
                   key={mainImage}
-                  src={mainImage ? `${import.meta.env.VITE_API_URL}/storage/${mainImage}` : 'https://via.placeholder.com/600x600?text=No+Image'}
+                  src={mainImage ? getImageUrl(mainImage) : 'https://via.placeholder.com/600x600?text=No+Image'}
                   alt={product.name}
                   className="w-full h-full object-cover animate-fade-up"
                 />
@@ -136,9 +142,8 @@ const ProductDetails = () => {
                       mainImage === image.image_url ? 'border-gold' : 'border-ink/10 hover:border-gold/50'
                     }`}
                   >
-                    {/* ✅ FIX: Use environment variable for thumbnail images */}
                     <img
-                      src={`${import.meta.env.VITE_API_URL}/storage/${image.image_url}`}
+                      src={getImageUrl(image.image_url)}
                       alt={`${product.name} ${index + 1}`}
                       className="w-full h-full object-cover"
                     />
