@@ -1,12 +1,13 @@
 import React from 'react'
 import { Link } from 'react-router-dom'
-import { FaInstagram, FaTiktok, FaSnapchat } from 'react-icons/fa'
+import { FaInstagram, FaTiktok, FaSnapchat, FaWhatsapp } from 'react-icons/fa'
 import logoWhite from '../../assets/logo-white.png'
 
 const SOCIALS = [
   { name: 'Instagram', url: 'https://www.instagram.com/masterpiecegh.official', icon: FaInstagram },
   { name: 'TikTok', url: 'https://www.tiktok.com/@masterpiece.gh_', icon: FaTiktok },
   { name: 'Snapchat', url: 'https://www.snapchat.com/add/masterpiece.gh', icon: FaSnapchat },
+  { name: 'WhatsApp', url: 'https://wa.me/233204082142', icon: FaWhatsapp },
 ]
 
 const Footer = () => {

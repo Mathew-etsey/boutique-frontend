@@ -2,8 +2,9 @@ import React, { useState, useEffect } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { useCart } from '../../context/CartContext'
 import { useAuth } from '../../context/AuthContext'
-import api from '../../services/api'
+import api, { getImageUrl } from '../../services/api'
 import toast from 'react-hot-toast'
+import PageTitle from '../common/PageTitle'
 
 const RadioCard = ({ name, value, checked, onChange, title, subtitle, price, priceClass }) => (
   <label
@@ -236,290 +237,295 @@ const Checkout = () => {
   const inputClass = "w-full bg-transparent border-b border-ink/20 pb-3 text-ink placeholder:text-ink/30 focus:outline-none focus:border-gold transition-colors duration-300"
 
   return (
-    <div className="min-h-screen bg-bone py-8 sm:py-12">
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="mb-8 animate-fade-up">
-          <span className="font-mono text-gold-dark uppercase text-[11px] tracking-[0.35em]">Almost There</span>
-          <h1 className="text-3xl sm:text-4xl font-display font-bold text-ink mt-2">Checkout</h1>
-        </div>
+    <>
+      <PageTitle 
+        title="Checkout"
+        description="Complete your order securely."
+      />
+      <div className="min-h-screen bg-bone py-8 sm:py-12">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="mb-8 animate-fade-up">
+            <span className="font-mono text-gold-dark uppercase text-[11px] tracking-[0.35em]">Almost There</span>
+            <h1 className="text-3xl sm:text-4xl font-display font-bold text-ink mt-2">Checkout</h1>
+          </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          {/* Checkout Form */}
-          <div className="lg:col-span-2">
-            <form onSubmit={handleSubmit} className="bg-white border border-ink/10 p-5 sm:p-7 space-y-8 animate-fade-up" style={{ animationDelay: '80ms' }}>
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            {/* Checkout Form */}
+            <div className="lg:col-span-2">
+              <form onSubmit={handleSubmit} className="bg-white border border-ink/10 p-5 sm:p-7 space-y-8 animate-fade-up" style={{ animationDelay: '80ms' }}>
 
-              {/* Account Type Selection */}
-              {!isAuthenticated() && (
+                {/* Account Type Selection */}
+                {!isAuthenticated() && (
+                  <div>
+                    <h3 className="font-mono text-[11px] uppercase tracking-[0.2em] text-ink/60 mb-4">
+                      Choose Checkout Type
+                    </h3>
+                    <div className="space-y-3">
+                      <RadioCard
+                        name="checkoutType"
+                        value="guest"
+                        checked={checkoutType === 'guest'}
+                        onChange={(e) => setCheckoutType(e.target.value)}
+                        title="Checkout as Guest"
+                        subtitle="No account needed"
+                        price=""
+                        priceClass=""
+                      />
+                      <RadioCard
+                        name="checkoutType"
+                        value="login"
+                        checked={checkoutType === 'login'}
+                        onChange={(e) => setCheckoutType(e.target.value)}
+                        title="Sign In"
+                        subtitle="For faster checkout"
+                        price=""
+                        priceClass=""
+                      />
+                    </div>
+                  </div>
+                )}
+
+                {/* Guest Form */}
+                {!isAuthenticated() && checkoutType === 'guest' && (
+                  <div className="p-5 bg-bone/60 border border-ink/10 rounded-sm">
+                    <h3 className="font-mono text-[11px] uppercase tracking-[0.2em] text-ink/60 mb-4">
+                      Guest Details
+                    </h3>
+                    <div className="space-y-5">
+                      <div>
+                        <label className="block font-mono text-[10px] uppercase tracking-wide text-ink/50 mb-2">
+                          Full Name
+                        </label>
+                        <input
+                          type="text"
+                          name="name"
+                          value={guestData.name}
+                          onChange={handleGuestChange}
+                          required
+                          className={inputClass}
+                          placeholder="John Doe"
+                        />
+                      </div>
+                      <div>
+                        <label className="block font-mono text-[10px] uppercase tracking-wide text-ink/50 mb-2">
+                          Email Address
+                        </label>
+                        <input
+                          type="email"
+                          name="email"
+                          value={guestData.email}
+                          onChange={handleGuestChange}
+                          required
+                          className={inputClass}
+                          placeholder="john@example.com"
+                        />
+                      </div>
+                      <div>
+                        <label className="block font-mono text-[10px] uppercase tracking-wide text-ink/50 mb-2">
+                          Phone Number
+                        </label>
+                        <input
+                          type="tel"
+                          name="phone"
+                          value={guestData.phone}
+                          onChange={handleGuestChange}
+                          required
+                          className={inputClass}
+                          placeholder="0244123456"
+                        />
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                {/* Login Option */}
+                {!isAuthenticated() && checkoutType === 'login' && (
+                  <div className="p-5 bg-bone/60 border border-ink/10 rounded-sm text-center">
+                    <p className="text-ink/70 text-sm">
+                      Already have an account?{' '}
+                      <Link to="/login" className="text-gold-dark hover:text-gold font-medium transition">
+                        Sign In
+                      </Link>
+                    </p>
+                    <p className="text-xs text-ink/40 mt-2">
+                      Or{' '}
+                      <button
+                        type="button"
+                        onClick={() => setCheckoutType('guest')}
+                        className="text-gold-dark hover:text-gold transition"
+                      >
+                        continue as guest
+                      </button>
+                    </p>
+                  </div>
+                )}
+
+                {/* Delivery Method */}
                 <div>
                   <h3 className="font-mono text-[11px] uppercase tracking-[0.2em] text-ink/60 mb-4">
-                    Choose Checkout Type
+                    Delivery Method
                   </h3>
                   <div className="space-y-3">
                     <RadioCard
-                      name="checkoutType"
-                      value="guest"
-                      checked={checkoutType === 'guest'}
-                      onChange={(e) => setCheckoutType(e.target.value)}
-                      title="Checkout as Guest"
-                      subtitle="No account needed"
-                      price=""
-                      priceClass=""
+                      name="delivery"
+                      value="pickup"
+                      checked={deliveryMethod === 'pickup'}
+                      onChange={(e) => setDeliveryMethod(e.target.value)}
+                      title="Pickup"
+                      subtitle="Collect from our boutique"
+                      price="FREE"
+                      priceClass="text-emerald-700"
                     />
                     <RadioCard
-                      name="checkoutType"
-                      value="login"
-                      checked={checkoutType === 'login'}
-                      onChange={(e) => setCheckoutType(e.target.value)}
-                      title="Sign In"
-                      subtitle="For faster checkout"
-                      price=""
-                      priceClass=""
+                      name="delivery"
+                      value="delivery"
+                      checked={deliveryMethod === 'delivery'}
+                      onChange={(e) => setDeliveryMethod(e.target.value)}
+                      title="Delivery"
+                      subtitle="Delivered to your address"
+                      price="GH₵ 10.00"
+                      priceClass="text-gold-dark"
+                    />
+                    <RadioCard
+                      name="delivery"
+                      value="express"
+                      checked={deliveryMethod === 'express'}
+                      onChange={(e) => setDeliveryMethod(e.target.value)}
+                      title="Express Delivery"
+                      subtitle="Same day delivery (within Accra)"
+                      price="GH₵ 25.00"
+                      priceClass="text-gold-dark"
                     />
                   </div>
                 </div>
-              )}
 
-              {/* Guest Form */}
-              {!isAuthenticated() && checkoutType === 'guest' && (
-                <div className="p-5 bg-bone/60 border border-ink/10 rounded-sm">
-                  <h3 className="font-mono text-[11px] uppercase tracking-[0.2em] text-ink/60 mb-4">
-                    Guest Details
-                  </h3>
-                  <div className="space-y-5">
-                    <div>
-                      <label className="block font-mono text-[10px] uppercase tracking-wide text-ink/50 mb-2">
-                        Full Name
-                      </label>
-                      <input
-                        type="text"
-                        name="name"
-                        value={guestData.name}
-                        onChange={handleGuestChange}
-                        required
-                        className={inputClass}
-                        placeholder="John Doe"
-                      />
-                    </div>
-                    <div>
-                      <label className="block font-mono text-[10px] uppercase tracking-wide text-ink/50 mb-2">
-                        Email Address
-                      </label>
-                      <input
-                        type="email"
-                        name="email"
-                        value={guestData.email}
-                        onChange={handleGuestChange}
-                        required
-                        className={inputClass}
-                        placeholder="john@example.com"
-                      />
-                    </div>
-                    <div>
-                      <label className="block font-mono text-[10px] uppercase tracking-wide text-ink/50 mb-2">
-                        Phone Number
-                      </label>
-                      <input
-                        type="tel"
-                        name="phone"
-                        value={guestData.phone}
-                        onChange={handleGuestChange}
-                        required
-                        className={inputClass}
-                        placeholder="0244123456"
-                      />
+                {/* Delivery Address */}
+                {(deliveryMethod === 'delivery' || deliveryMethod === 'express') && (
+                  <div>
+                    <h3 className="font-mono text-[11px] uppercase tracking-[0.2em] text-ink/60 mb-4">
+                      Delivery Address
+                    </h3>
+                    <div className="space-y-5">
+                      <div>
+                        <label className="block font-mono text-[10px] uppercase tracking-wide text-ink/50 mb-2">
+                          Address
+                        </label>
+                        <textarea
+                          value={deliveryAddress}
+                          onChange={(e) => setDeliveryAddress(e.target.value)}
+                          required={deliveryMethod !== 'pickup'}
+                          rows="3"
+                          className={`${inputClass} resize-none`}
+                          placeholder="Enter your delivery address"
+                        />
+                      </div>
+
+                      <div>
+                        <label className="block font-mono text-[10px] uppercase tracking-wide text-ink/50 mb-2">
+                          Region
+                        </label>
+                        <select
+                          value={deliveryZone}
+                          onChange={(e) => setDeliveryZone(e.target.value)}
+                          className={`${inputClass} bg-white`}
+                        >
+                          {deliveryZones.map((zone) => (
+                            <option key={zone} value={zone}>{zone}</option>
+                          ))}
+                        </select>
+                      </div>
                     </div>
                   </div>
-                </div>
-              )}
+                )}
 
-              {/* Login Option */}
-              {!isAuthenticated() && checkoutType === 'login' && (
-                <div className="p-5 bg-bone/60 border border-ink/10 rounded-sm text-center">
-                  <p className="text-ink/70 text-sm">
-                    Already have an account?{' '}
-                    <Link to="/login" className="text-gold-dark hover:text-gold font-medium transition">
-                      Sign In
-                    </Link>
-                  </p>
-                  <p className="text-xs text-ink/40 mt-2">
-                    Or{' '}
-                    <button
-                      type="button"
-                      onClick={() => setCheckoutType('guest')}
-                      className="text-gold-dark hover:text-gold transition"
-                    >
-                      continue as guest
-                    </button>
-                  </p>
-                </div>
-              )}
-
-              {/* Delivery Method */}
-              <div>
-                <h3 className="font-mono text-[11px] uppercase tracking-[0.2em] text-ink/60 mb-4">
-                  Delivery Method
-                </h3>
-                <div className="space-y-3">
-                  <RadioCard
-                    name="delivery"
-                    value="pickup"
-                    checked={deliveryMethod === 'pickup'}
-                    onChange={(e) => setDeliveryMethod(e.target.value)}
-                    title="Pickup"
-                    subtitle="Collect from our boutique"
-                    price="FREE"
-                    priceClass="text-emerald-700"
-                  />
-                  <RadioCard
-                    name="delivery"
-                    value="delivery"
-                    checked={deliveryMethod === 'delivery'}
-                    onChange={(e) => setDeliveryMethod(e.target.value)}
-                    title="Delivery"
-                    subtitle="Delivered to your address"
-                    price="GH₵ 10.00"
-                    priceClass="text-gold-dark"
-                  />
-                  <RadioCard
-                    name="delivery"
-                    value="express"
-                    checked={deliveryMethod === 'express'}
-                    onChange={(e) => setDeliveryMethod(e.target.value)}
-                    title="Express Delivery"
-                    subtitle="Same day delivery (within Accra)"
-                    price="GH₵ 25.00"
-                    priceClass="text-gold-dark"
-                  />
-                </div>
-              </div>
-
-              {/* Delivery Address */}
-              {(deliveryMethod === 'delivery' || deliveryMethod === 'express') && (
+                {/* Order Notes */}
                 <div>
                   <h3 className="font-mono text-[11px] uppercase tracking-[0.2em] text-ink/60 mb-4">
-                    Delivery Address
+                    Additional Notes
                   </h3>
-                  <div className="space-y-5">
-                    <div>
-                      <label className="block font-mono text-[10px] uppercase tracking-wide text-ink/50 mb-2">
-                        Address
-                      </label>
-                      <textarea
-                        value={deliveryAddress}
-                        onChange={(e) => setDeliveryAddress(e.target.value)}
-                        required={deliveryMethod !== 'pickup'}
-                        rows="3"
-                        className={`${inputClass} resize-none`}
-                        placeholder="Enter your delivery address"
-                      />
-                    </div>
-
-                    <div>
-                      <label className="block font-mono text-[10px] uppercase tracking-wide text-ink/50 mb-2">
-                        Region
-                      </label>
-                      <select
-                        value={deliveryZone}
-                        onChange={(e) => setDeliveryZone(e.target.value)}
-                        className={`${inputClass} bg-white`}
-                      >
-                        {deliveryZones.map((zone) => (
-                          <option key={zone} value={zone}>{zone}</option>
-                        ))}
-                      </select>
-                    </div>
-                  </div>
+                  <textarea
+                    value={orderNotes}
+                    onChange={(e) => setOrderNotes(e.target.value)}
+                    rows="3"
+                    className={`${inputClass} resize-none`}
+                    placeholder="Any special instructions? (e.g., gift wrapping, delivery instructions)"
+                  />
                 </div>
-              )}
 
-              {/* Order Notes */}
-              <div>
-                <h3 className="font-mono text-[11px] uppercase tracking-[0.2em] text-ink/60 mb-4">
-                  Additional Notes
+                {/* Submit Button */}
+                <button
+                  type="submit"
+                  disabled={loading}
+                  className="w-full bg-gold text-ink py-4 rounded-sm font-mono text-xs uppercase tracking-[0.25em] hover:bg-gold-light active:scale-[0.98] animate-glow-pulse transition-all duration-300 disabled:opacity-50 disabled:animate-none"
+                >
+                  {loading ? 'Processing...' : `Place Order · GH₵ ${totalWithDelivery.toFixed(2)}`}
+                </button>
+              </form>
+            </div>
+
+            {/* Order Summary */}
+            <div className="lg:col-span-1">
+              <div className="bg-ink text-bone p-6 sticky top-24 animate-fade-up" style={{ animationDelay: '140ms' }}>
+                <h3 className="font-display text-lg font-bold mb-5">
+                  Order Summary
                 </h3>
-                <textarea
-                  value={orderNotes}
-                  onChange={(e) => setOrderNotes(e.target.value)}
-                  rows="3"
-                  className={`${inputClass} resize-none`}
-                  placeholder="Any special instructions? (e.g., gift wrapping, delivery instructions)"
-                />
-              </div>
 
-              {/* Submit Button */}
-              <button
-                type="submit"
-                disabled={loading}
-                className="w-full bg-gold text-ink py-4 rounded-sm font-mono text-xs uppercase tracking-[0.25em] hover:bg-gold-light active:scale-[0.98] animate-glow-pulse transition-all duration-300 disabled:opacity-50 disabled:animate-none"
-              >
-                {loading ? 'Processing...' : `Place Order · GH₵ ${totalWithDelivery.toFixed(2)}`}
-              </button>
-            </form>
-          </div>
-
-          {/* Order Summary */}
-          <div className="lg:col-span-1">
-            <div className="bg-ink text-bone p-6 sticky top-24 animate-fade-up" style={{ animationDelay: '140ms' }}>
-              <h3 className="font-display text-lg font-bold mb-5">
-                Order Summary
-              </h3>
-
-              <div className="space-y-4 max-h-60 overflow-y-auto pr-1">
-                {cartItems.map((item, index) => (
-                  <div key={index} className="flex items-center gap-3 text-sm">
-                    <div className="w-12 h-12 bg-bone/10 overflow-hidden flex-shrink-0 border border-gold/20">
-                      {item.image ? (
-                        // ✅ FIX: Use environment variable for image URL
-                        <img
-                          src={`${import.meta.env.VITE_API_URL}/storage/${item.image}`}
-                          alt={item.name}
-                          className="w-full h-full object-cover"
-                        />
-                      ) : (
-                        <div className="w-full h-full flex items-center justify-center text-bone/30 text-[9px] font-mono">
-                          NO IMG
-                        </div>
-                      )}
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <p className="text-bone truncate">{item.name}</p>
-                      <p className="text-bone/40 text-xs font-mono">
-                        {item.quantity} × GH₵ {item.price}
+                <div className="space-y-4 max-h-60 overflow-y-auto pr-1">
+                  {cartItems.map((item, index) => (
+                    <div key={index} className="flex items-center gap-3 text-sm">
+                      <div className="w-12 h-12 bg-bone/10 overflow-hidden flex-shrink-0 border border-gold/20">
+                        {item.image ? (
+                          <img
+                            src={getImageUrl(item.image)}
+                            alt={item.name}
+                            className="w-full h-full object-cover"
+                          />
+                        ) : (
+                          <div className="w-full h-full flex items-center justify-center text-bone/30 text-[9px] font-mono">
+                            NO IMG
+                          </div>
+                        )}
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <p className="text-bone truncate">{item.name}</p>
+                        <p className="text-bone/40 text-xs font-mono">
+                          {item.quantity} × GH₵ {item.price}
+                        </p>
+                      </div>
+                      <p className="font-mono text-bone/80 text-xs whitespace-nowrap">
+                        GH₵ {(item.price * item.quantity).toFixed(2)}
                       </p>
                     </div>
-                    <p className="font-mono text-bone/80 text-xs whitespace-nowrap">
-                      GH₵ {(item.price * item.quantity).toFixed(2)}
-                    </p>
+                  ))}
+                </div>
+
+                <div className="border-t border-gold/15 mt-5 pt-5 space-y-2.5">
+                  <div className="flex justify-between text-sm">
+                    <span className="text-bone/50">Subtotal</span>
+                    <span className="font-mono text-bone">GH₵ {cartTotal.toFixed(2)}</span>
                   </div>
-                ))}
-              </div>
+                  <div className="flex justify-between text-sm">
+                    <span className="text-bone/50">Delivery Fee</span>
+                    <span className="font-mono text-bone">GH₵ {deliveryFee.toFixed(2)}</span>
+                  </div>
+                  <div className="border-t border-gold/15 pt-3 flex justify-between items-baseline">
+                    <span className="font-mono text-[11px] uppercase tracking-wide text-bone/60">Total</span>
+                    <span className="text-gold font-display text-xl font-bold">GH₵ {totalWithDelivery.toFixed(2)}</span>
+                  </div>
+                </div>
 
-              <div className="border-t border-gold/15 mt-5 pt-5 space-y-2.5">
-                <div className="flex justify-between text-sm">
-                  <span className="text-bone/50">Subtotal</span>
-                  <span className="font-mono text-bone">GH₵ {cartTotal.toFixed(2)}</span>
-                </div>
-                <div className="flex justify-between text-sm">
-                  <span className="text-bone/50">Delivery Fee</span>
-                  <span className="font-mono text-bone">GH₵ {deliveryFee.toFixed(2)}</span>
-                </div>
-                <div className="border-t border-gold/15 pt-3 flex justify-between items-baseline">
-                  <span className="font-mono text-[11px] uppercase tracking-wide text-bone/60">Total</span>
-                  <span className="text-gold font-display text-xl font-bold">GH₵ {totalWithDelivery.toFixed(2)}</span>
-                </div>
+                <Link
+                  to="/cart"
+                  className="block text-center font-mono text-[11px] uppercase tracking-[0.2em] text-gold/70 hover:text-gold active:text-gold transition mt-6"
+                >
+                  ← Return to Cart
+                </Link>
               </div>
-
-              <Link
-                to="/cart"
-                className="block text-center font-mono text-[11px] uppercase tracking-[0.2em] text-gold/70 hover:text-gold active:text-gold transition mt-6"
-              >
-                ← Return to Cart
-              </Link>
             </div>
           </div>
         </div>
       </div>
-    </div>
+    </>
   )
 }
 
