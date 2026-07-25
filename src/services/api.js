@@ -1,8 +1,7 @@
 import axios from 'axios'
 
-// ✅ Use hardcoded Railway URL as fallback
-//const API_URL = import.meta.env.VITE_API_URL || 'https://onlineshoppingboutique-production.up.railway.app'
-const API_URL = 'https://onlineshoppingboutique-production.up.railway.app'
+// ✅ Add /api to the Railway URL
+const API_URL = 'https://onlineshoppingboutique-production.up.railway.app/api'
 
 console.log('🔍 API_URL is set to:', API_URL)
 
