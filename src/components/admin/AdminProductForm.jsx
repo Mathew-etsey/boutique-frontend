@@ -297,8 +297,9 @@ const AdminProductForm = () => {
           {isEditing && existingImage && !imagePreview && (
             <div className="mb-3">
               <p className="font-mono text-[10px] uppercase tracking-wide text-ink/40 mb-2">Current Image</p>
+              {/* ✅ FIX: Use environment variable for existing image URL */}
               <img
-                src={`http://localhost:8000/storage/${existingImage}`}
+                src={`${import.meta.env.VITE_API_URL}/storage/${existingImage}`}
                 alt="Current product"
                 className="w-28 h-28 object-cover rounded-sm border border-ink/10"
               />

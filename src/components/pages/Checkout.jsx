@@ -469,8 +469,9 @@ const Checkout = () => {
                   <div key={index} className="flex items-center gap-3 text-sm">
                     <div className="w-12 h-12 bg-bone/10 overflow-hidden flex-shrink-0 border border-gold/20">
                       {item.image ? (
+                        // ✅ FIX: Use environment variable for image URL
                         <img
-                          src={`http://localhost:8000/storage/${item.image}`}
+                          src={`${import.meta.env.VITE_API_URL}/storage/${item.image}`}
                           alt={item.name}
                           className="w-full h-full object-cover"
                         />

@@ -92,8 +92,9 @@ const AdminProducts = () => {
                   <td className="py-3 px-4">
                     <div className="flex items-center gap-3">
                       {product.images && product.images.length > 0 ? (
+                        // ✅ FIX: Use environment variable for image URL
                         <img
-                          src={`http://localhost:8000/storage/${product.images[0].image_url}`}
+                          src={`${import.meta.env.VITE_API_URL}/storage/${product.images[0].image_url}`}
                           alt={product.name}
                           className="w-11 h-11 object-cover rounded-sm flex-shrink-0 border border-ink/10"
                         />
@@ -144,8 +145,9 @@ const AdminProducts = () => {
             <div key={product.id} className="bg-white border border-ink/10 rounded-sm p-4">
               <div className="flex items-center gap-3">
                 {product.images && product.images.length > 0 ? (
+                  // ✅ FIX: Use environment variable for image URL
                   <img
-                    src={`http://localhost:8000/storage/${product.images[0].image_url}`}
+                    src={`${import.meta.env.VITE_API_URL}/storage/${product.images[0].image_url}`}
                     alt={product.name}
                     className="w-16 h-16 object-cover rounded-sm flex-shrink-0 border border-ink/10"
                   />

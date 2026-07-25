@@ -5,7 +5,7 @@ import MarqueeTicker from '../common/MarqueeTicker'
 import Reveal from '../common/Reveal'
 import { ChevronRightIcon } from '@heroicons/react/24/outline'
 import heroBg from '../../assets/hero-bg.jpg'
-import logoGold from '../../assets/logo-gold.png'  // ← Keep your original logo import
+import logoGold from '../../assets/logo-gold.png'
 
 const Home = () => {
   const [featured, setFeatured] = useState([])
@@ -19,8 +19,9 @@ const Home = () => {
           api.get('/public/featured'),
           api.get('/public/new-arrivals')
         ])
-        setFeatured(featuredRes.data.data || [])
-        setNewArrivals(newRes.data.data || [])
+        // ✅ Only take first 4 products
+        setFeatured(featuredRes.data.data?.slice(0, 4) || [])
+        setNewArrivals(newRes.data.data?.slice(0, 4) || [])
         setLoading(false)
       } catch (error) {
         console.error('API Error:', error)
@@ -46,7 +47,7 @@ const Home = () => {
           <div className="absolute w-[280px] h-[280px] sm:w-[380px] sm:h-[380px] rounded-full bg-ink/50 blur-3xl" />
 
           <img
-            src={logoGold}  // ← Using your original logoGold import
+            src={logoGold}
             alt="Masterpiece"
             className="relative w-40 sm:w-52 md:w-60 h-auto object-contain animate-float drop-shadow-[0_8px_30px_rgba(0,0,0,0.6)]"
           />
@@ -67,7 +68,7 @@ const Home = () => {
 
       <MarqueeTicker />
 
-      {/* ===== FEATURED PRODUCTS GRID ===== */}
+      {/* ===== FEATURED PRODUCTS GRID (4 products) ===== */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 sm:py-20">
         <Reveal className="text-center mb-12 sm:mb-16">
           <span className="font-mono text-gold-dark uppercase text-[11px] tracking-[0.35em]">Curated Picks</span>
@@ -82,10 +83,10 @@ const Home = () => {
         {loading ? (
           <p className="text-center font-mono text-sm text-ink/50">Loading...</p>
         ) : featured.length > 0 ? (
-          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-5 md:gap-6">
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-5 md:gap-6">
             {featured.map((product, index) => {
               const imageUrl = product.images?.[0]?.image_url
-                ? `http://localhost:8000/storage/${product.images[0].image_url}`
+                ? `${import.meta.env.VITE_API_URL}/storage/${product.images[0].image_url}`
                 : null
 
               return (
@@ -129,6 +130,16 @@ const Home = () => {
         ) : (
           <p className="text-center font-mono text-sm text-ink/50">No featured products yet</p>
         )}
+
+        {/* ✅ View All Products Button */}
+        <div className="text-center mt-10">
+          <Link
+            to="/shop"
+            className="inline-block border-2 border-gold text-gold px-8 py-3 rounded-full font-mono text-xs tracking-[0.2em] uppercase hover:bg-gold hover:text-ink transition-all duration-300"
+          >
+            View All Products
+          </Link>
+        </div>
       </section>
 
       {/* ===== "FOCUS ON DETAILS" SECTION ===== */}
@@ -198,7 +209,7 @@ const Home = () => {
         </div>
       </section>
 
-      {/* ===== NEW ARRIVALS ===== */}
+      {/* ===== NEW ARRIVALS (4 products) ===== */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 sm:py-20">
         <Reveal className="text-center mb-12 sm:mb-16">
           <span className="font-mono text-gold-dark uppercase text-[11px] tracking-[0.35em]">Fresh In</span>
@@ -210,10 +221,10 @@ const Home = () => {
         {loading ? (
           <p className="text-center font-mono text-sm text-ink/50">Loading...</p>
         ) : newArrivals.length > 0 ? (
-          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-5 md:gap-6">
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-5 md:gap-6">
             {newArrivals.map((product, index) => {
               const imageUrl = product.images?.[0]?.image_url
-                ? `http://localhost:8000/storage/${product.images[0].image_url}`
+                ? `${import.meta.env.VITE_API_URL}/storage/${product.images[0].image_url}`
                 : null
 
               return (
@@ -256,6 +267,16 @@ const Home = () => {
         ) : (
           <p className="text-center font-mono text-sm text-ink/50">No new arrivals yet</p>
         )}
+
+        {/* ✅ View All Products Button */}
+        <div className="text-center mt-10">
+          <Link
+            to="/shop"
+            className="inline-block border-2 border-gold text-gold px-8 py-3 rounded-full font-mono text-xs tracking-[0.2em] uppercase hover:bg-gold hover:text-ink transition-all duration-300"
+          >
+            View All Products
+          </Link>
+        </div>
       </section>
 
       {/* ===== CURATED OUTFIT SECTION ===== */}

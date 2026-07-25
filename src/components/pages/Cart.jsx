@@ -56,8 +56,9 @@ const Cart = () => {
                 {/* Product Image */}
                 <div className="w-24 h-24 bg-ink/5 overflow-hidden flex-shrink-0 border border-ink/10">
                   {item.image ? (
+                    // ✅ FIX: Use environment variable for image URL
                     <img
-                      src={`http://localhost:8000/storage/${item.image}`}
+                      src={`${import.meta.env.VITE_API_URL}/storage/${item.image}`}
                       alt={item.name}
                       className="w-full h-full object-cover"
                     />

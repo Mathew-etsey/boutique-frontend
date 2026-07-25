@@ -8,8 +8,9 @@ const STOCK_STYLES = {
 }
 
 const ProductCard = ({ product }) => {
+  // ✅ FIX: Use environment variable for image URL
   const imageUrl = product.images && product.images.length > 0
-    ? `http://localhost:8000/storage/${product.images[0].image_url}`
+    ? `${import.meta.env.VITE_API_URL}/storage/${product.images[0].image_url}`
     : null
   const stock = product.stock_status
   const stockStyle = stock ? (STOCK_STYLES[stock.status] || STOCK_STYLES.in_stock) : null
