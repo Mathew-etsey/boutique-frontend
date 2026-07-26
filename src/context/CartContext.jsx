@@ -1,5 +1,6 @@
 import React, { createContext, useState, useEffect, useContext } from 'react'
 import toast from 'react-hot-toast'
+import { ShoppingCartIcon } from '@heroicons/react/24/outline'
 
 const CartContext = createContext()
 
@@ -35,10 +36,8 @@ export const CartProvider = ({ children }) => {
 
   // Update totals whenever cartItems changes
   useEffect(() => {
-    // Save to localStorage
     localStorage.setItem('cart', JSON.stringify(cartItems))
     
-    // Calculate totals
     const total = cartItems.reduce((sum, item) => sum + (item.price || 0) * (item.quantity || 0), 0)
     const count = cartItems.reduce((sum, item) => sum + (item.quantity || 0), 0)
     
@@ -60,7 +59,31 @@ export const CartProvider = ({ children }) => {
         toast.success(`Updated ${product.name} quantity`)
         return updatedItems
       } else {
-        toast.success(`Added ${product.name} to cart`)
+        // ✅ Custom toast with cart icon and 8 second duration
+        toast.success(
+          <div className="flex items-start gap-3">
+            <div className="w-10 h-10 rounded-full bg-gold/20 flex items-center justify-center flex-shrink-0">
+              <ShoppingCartIcon className="w-5 h-5 text-gold" />
+            </div>
+            <div>
+              <div className="font-medium text-bone">{product.name} added to cart!</div>
+              <div className="text-xs text-bone/60 mt-0.5">
+                Tap the <span className="text-gold font-medium">cart icon</span> above to proceed with your order
+              </div>
+            </div>
+          </div>,
+          {
+            duration: 8000,
+            style: {
+              background: '#0B0B0C',
+              color: '#EDE6D8',
+              border: '1px solid #B8923F',
+              borderRadius: '12px',
+              padding: '16px 20px',
+              maxWidth: '420px',
+            },
+          }
+        )
         return [...currentItems, {
           id: product.id,
           name: product.name,
