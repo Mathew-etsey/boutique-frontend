@@ -16,6 +16,7 @@ const AdminProductForm = () => {
     description: '',
     price: '',
     stock_quantity: '',
+    is_featured: false,  // ← ADDED
     images: null
   })
   const [imagePreview, setImagePreview] = useState(null)
@@ -49,6 +50,7 @@ const AdminProductForm = () => {
             description: product.description || '',
             price: product.price || '',
             stock_quantity: product.stock_quantity || '',
+            is_featured: product.is_featured == 1,  // ← ADDED
             images: null
           })
           if (product.images && product.images.length > 0) {
@@ -160,6 +162,7 @@ const AdminProductForm = () => {
       data.append('description', formData.description || '')
       data.append('price', formData.price)
       data.append('stock_quantity', formData.stock_quantity)
+      data.append('is_featured', formData.is_featured ? '1' : '0')  // ← ADDED
 
       if (formData.images && formData.images instanceof File) {
         data.append('images', formData.images)
@@ -287,6 +290,31 @@ const AdminProductForm = () => {
             className={inputClass}
             placeholder="0"
           />
+        </div>
+
+        {/* ===== FEATURED TOGGLE ===== */}
+        <div>
+          <label className="block font-mono text-[11px] uppercase tracking-[0.2em] text-ink/60 mb-2">
+            Featured Product
+          </label>
+          <div className="flex items-center gap-3">
+            <button
+              type="button"
+              onClick={() => setFormData(prev => ({ ...prev, is_featured: !prev.is_featured }))}
+              className={`relative w-12 h-6 rounded-full transition-colors duration-300 ${
+                formData.is_featured ? 'bg-gold' : 'bg-ink/20'
+              }`}
+            >
+              <span
+                className={`absolute top-0.5 left-0.5 w-5 h-5 rounded-full bg-white transition-transform duration-300 ${
+                  formData.is_featured ? 'translate-x-6' : 'translate-x-0'
+                }`}
+              />
+            </button>
+            <span className="text-sm text-ink/60">
+              {formData.is_featured ? 'Yes, feature this product' : 'No, don\'t feature'}
+            </span>
+          </div>
         </div>
 
         <div>
