@@ -2,7 +2,7 @@ import React from 'react'
 import { Helmet } from 'react-helmet-async'
 
 const PageTitle = ({ title, description, image, url }) => {
-  const siteName = 'MASTERPIECE'
+  const siteName = 'MasterpieceGH'
   const defaultImage = 'https://onlineshoppingboutique-production.up.railway.app/images/logos/logo-gold.png'
   const defaultUrl = 'https://boutique-frontend-production.up.railway.app'
 

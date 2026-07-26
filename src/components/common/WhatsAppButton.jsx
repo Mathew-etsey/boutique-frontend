@@ -49,9 +49,9 @@ const WhatsAppButton = () => {
       </a>
 
       {/* Badge - Shows "Online" */}
-      <div className="absolute -top-1 -right-1 bg-green-400 text-white text-xs px-2 py-0.5 rounded-full animate-pulse">
+      {/*<div className="absolute -top-1 -right-1 bg-green-400 text-white text-xs px-2 py-0.5 rounded-full animate-pulse">
         
-      </div>
+      </div>*/}
     </div>
   )
 }

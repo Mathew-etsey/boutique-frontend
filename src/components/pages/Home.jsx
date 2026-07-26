@@ -184,7 +184,7 @@ const Home = () => {
                     <span className="text-gold text-sm mt-0.5">✦</span>
                     <div>
                       <h4 className="text-sm font-medium text-bone">Premium Heavyweight Cotton</h4>
-                      <p className="text-bone/40 text-xs">100% long-staple combed cotton at 280GSM</p>
+                      <p className="text-bone/40 text-xs">100% long-staple combed cotton at 350GSM</p>
                     </div>
                   </div>
                   <div className="flex items-start gap-3">
