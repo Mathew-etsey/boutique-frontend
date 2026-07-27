@@ -98,14 +98,9 @@ const Checkout = () => {
     'Upper West'
   ]
 
-  const getDeliveryFee = () => {
-    if (deliveryMethod === 'pickup') return 0
-    if (deliveryMethod === 'express') return 25
-    return 10
-  }
-
-  const deliveryFee = getDeliveryFee()
-  const totalWithDelivery = cartTotal + deliveryFee
+  // REMOVED: getDeliveryFee() function
+  // REMOVED: deliveryFee variable
+  const totalWithDelivery = cartTotal // UPDATED: removed + deliveryFee
 
   const payWithPaystack = (order) => {
     if (!window.PaystackPop) {
@@ -372,8 +367,8 @@ const Checkout = () => {
                       checked={deliveryMethod === 'pickup'}
                       onChange={(e) => setDeliveryMethod(e.target.value)}
                       title="Pickup"
-                      subtitle="Collect from our boutique"
-                      price="FREE"
+                      //subtitle="Collect from our boutique"//////
+                     //// price="FREE"
                       priceClass="text-emerald-700"
                     />
                     <RadioCard
@@ -383,8 +378,8 @@ const Checkout = () => {
                       onChange={(e) => setDeliveryMethod(e.target.value)}
                       title="Delivery"
                       subtitle="Delivered to your address"
-                      price="GH₵ 10.00"
-                      priceClass="text-gold-dark"
+                      //////price="Free" // UPDATED: Changed to "Free"
+                      priceClass="text-emerald-700" // UPDATED: Changed to green
                     />
                     <RadioCard
                       name="delivery"
@@ -393,8 +388,8 @@ const Checkout = () => {
                       onChange={(e) => setDeliveryMethod(e.target.value)}
                       title="Express Delivery"
                       subtitle="Same day delivery (within Accra)"
-                      price="GH₵ 25.00"
-                      priceClass="text-gold-dark"
+                      //////price="Free" // UPDATED: Changed to "Free"
+                      priceClass="text-emerald-700" // UPDATED: Changed to green
                     />
                   </div>
                 </div>
@@ -458,7 +453,7 @@ const Checkout = () => {
                   disabled={loading}
                   className="w-full bg-gold text-ink py-4 rounded-sm font-mono text-xs uppercase tracking-[0.25em] hover:bg-gold-light active:scale-[0.98] animate-glow-pulse transition-all duration-300 disabled:opacity-50 disabled:animate-none"
                 >
-                  {loading ? 'Processing...' : `Place Order · GH₵ ${totalWithDelivery.toFixed(2)}`}
+                  {loading ? 'Processing...' : `Place Order · GH₵ ${cartTotal.toFixed(2)}`} {/* UPDATED: Changed to cartTotal */}
                 </button>
               </form>
             </div>
@@ -504,10 +499,7 @@ const Checkout = () => {
                     <span className="text-bone/50">Subtotal</span>
                     <span className="font-mono text-bone">GH₵ {cartTotal.toFixed(2)}</span>
                   </div>
-                  <div className="flex justify-between text-sm">
-                    <span className="text-bone/50">Delivery Fee</span>
-                    <span className="font-mono text-bone">GH₵ {deliveryFee.toFixed(2)}</span>
-                  </div>
+                  {/* REMOVED: Delivery Fee block */}
                   <div className="border-t border-gold/15 pt-3 flex justify-between items-baseline">
                     <span className="font-mono text-[11px] uppercase tracking-wide text-bone/60">Total</span>
                     <span className="text-gold font-display text-xl font-bold">GH₵ {totalWithDelivery.toFixed(2)}</span>

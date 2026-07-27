@@ -22,6 +22,28 @@ const STATUS_OPTIONS = [
   { value: 'cancelled', label: 'Cancelled' },
 ]
 
+// ✅ Helper function to get customer name
+const getCustomerName = (order) => {
+  if (order.user?.name) {
+    return order.user.name
+  }
+  if (order.guest_name) {
+    return order.guest_name
+  }
+  return 'Unknown'
+}
+
+// ✅ Helper function to get customer phone
+const getCustomerPhone = (order) => {
+  if (order.user?.phone) {
+    return order.user.phone
+  }
+  if (order.guest_phone) {
+    return order.guest_phone
+  }
+  return 'N/A'
+}
+
 const AdminOrders = () => {
   const [orders, setOrders] = useState([])
   const [loading, setLoading] = useState(true)
@@ -83,6 +105,7 @@ const AdminOrders = () => {
               <tr className="bg-bone border-b border-ink/10">
                 <th className="text-left py-3 px-4 font-mono text-[10px] uppercase tracking-wide text-ink/40">Order #</th>
                 <th className="text-left py-3 px-4 font-mono text-[10px] uppercase tracking-wide text-ink/40">Customer</th>
+                <th className="text-left py-3 px-4 font-mono text-[10px] uppercase tracking-wide text-ink/40">Phone</th>  {/* ← ADDED */}
                 <th className="text-left py-3 px-4 font-mono text-[10px] uppercase tracking-wide text-ink/40">Total</th>
                 <th className="text-left py-3 px-4 font-mono text-[10px] uppercase tracking-wide text-ink/40">Status</th>
                 <th className="text-left py-3 px-4 font-mono text-[10px] uppercase tracking-wide text-ink/40">Date</th>
@@ -92,7 +115,7 @@ const AdminOrders = () => {
             <tbody>
               {orders.length === 0 ? (
                 <tr>
-                  <td colSpan="6" className="text-center py-10 font-mono text-sm text-ink/40">
+                  <td colSpan="7" className="text-center py-10 font-mono text-sm text-ink/40">
                     No orders found
                   </td>
                 </tr>
@@ -100,7 +123,8 @@ const AdminOrders = () => {
                 orders.map((order) => (
                   <tr key={order.id} className="border-b border-ink/5 hover:bg-bone/60 transition">
                     <td className="py-3 px-4 font-mono text-sm text-ink whitespace-nowrap">{order.order_number}</td>
-                    <td className="py-3 px-4 text-sm text-ink/70">{order.user?.name || order.guest_name || 'Unknown'}</td>
+                    <td className="py-3 px-4 text-sm text-ink/70">{getCustomerName(order)}</td>
+                    <td className="py-3 px-4 text-sm text-ink/70 whitespace-nowrap">{getCustomerPhone(order)}</td>
                     <td className="py-3 px-4 font-mono text-sm text-gold-dark whitespace-nowrap">GH₵ {order.total_amount}</td>
                     <td className="py-3 px-4">
                       <span className={`inline-block border rounded-full px-2.5 py-1 font-mono text-[10px] uppercase tracking-wide whitespace-nowrap ${getStatusStyle(order.order_status)}`}>
@@ -140,7 +164,8 @@ const AdminOrders = () => {
                   {order.order_status.replace('_', ' ')}
                 </span>
               </div>
-              <p className="text-sm text-ink/70">{order.user?.name || order.guest_name || 'Unknown'}</p>
+              <p className="text-sm text-ink/70">{getCustomerName(order)}</p>
+              <p className="text-sm text-ink/50">{getCustomerPhone(order)}</p>  {/* ← ADDED */}
               <div className="flex justify-between items-center mt-2 mb-3">
                 <span className="font-mono text-sm text-gold-dark">GH₵ {order.total_amount}</span>
                 <span className="text-xs text-ink/40">{new Date(order.created_at).toLocaleDateString()}</span>
