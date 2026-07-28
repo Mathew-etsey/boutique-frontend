@@ -31,10 +31,28 @@ api.interceptors.request.use((config) => {
   return config
 })
 
-// Helper function to get image URL
+/**
+ * Helper function to get image URL
+ * Handles both local storage paths and Cloudinary URLs
+ */
 export const getImageUrl = (imagePath) => {
-  if (!imagePath) return null
-  return `${BASE_URL}/storage/${imagePath}`
+  if (!imagePath) return null;
+  
+  // If it's already a full URL (Cloudinary)
+  if (imagePath.startsWith('http')) {
+    return imagePath;
+  }
+  
+  // For local storage paths
+  // Remove any leading slashes to avoid double slashes
+  const cleanPath = imagePath.replace(/^\/+/, '');
+  
+  // If it's a storage path
+  if (cleanPath.startsWith('storage/')) {
+    return `${BASE_URL}/${cleanPath}`;
+  }
+  
+  return `${BASE_URL}/storage/${cleanPath}`;
 }
 
 export default api
