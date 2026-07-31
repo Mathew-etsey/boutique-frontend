@@ -11,7 +11,8 @@ import Checkout from './components/pages/Checkout'
 import OrderConfirmation from './components/pages/OrderConfirmation'
 import WhatsAppButton from './components/common/WhatsAppButton'
 import UserDashboard from './components/pages/UserDashboard'
-import About from './components/pages/About'  // ← ADD THIS
+import About from './components/pages/About'
+import Wishlist from './components/pages/Wishlist'  // ← ADDED THIS IMPORT
 import AdminLayout from './components/admin/AdminLayout'
 import AdminDashboard from './components/admin/AdminDashboard'
 import AdminProducts from './components/admin/AdminProducts'
@@ -35,7 +36,8 @@ function App() {
           <Route path="checkout" element={<Checkout />} />
           <Route path="order-confirmation/:id" element={<OrderConfirmation />} />
           <Route path="dashboard" element={<UserDashboard />} />
-          <Route path="about" element={<About />} />  {/* ← ADD THIS */}
+          <Route path="about" element={<About />} />
+          <Route path="wishlist" element={<Wishlist />} />  {/* ← ADDED THIS ROUTE */}
         </Route>
 
         {/* Admin Routes - Protected */}

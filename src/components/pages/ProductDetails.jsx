@@ -6,6 +6,7 @@ import { HeartIcon, ShoppingCartIcon } from '@heroicons/react/24/outline'
 import { HeartIcon as HeartSolidIcon } from '@heroicons/react/24/solid'
 import toast from 'react-hot-toast'
 import { useCart } from '../../context/CartContext'
+import { useAuth } from '../../context/AuthContext'
 import Reveal from '../common/Reveal'
 import PageTitle from '../common/PageTitle'
 
@@ -19,6 +20,7 @@ const ProductDetails = () => {
   const { id } = useParams()
   const navigate = useNavigate()
   const { addToCart } = useCart()
+  const { isAuthenticated, user } = useAuth()
   const [product, setProduct] = useState(null)
   const [loading, setLoading] = useState(true)
   const [selectedSize, setSelectedSize] = useState('')
@@ -32,6 +34,12 @@ const ProductDetails = () => {
     window.scrollTo(0, 0)
   }, [id])
 
+  useEffect(() => {
+    if (product && isAuthenticated()) {
+      checkWishlistStatus()
+    }
+  }, [product, isAuthenticated])
+
   const fetchProduct = async () => {
     try {
       const response = await api.get(`/public/products/${id}`)
@@ -44,6 +52,20 @@ const ProductDetails = () => {
       console.error('Error fetching product:', error)
       toast.error('Product not found')
       navigate('/shop')
+    }
+  }
+
+  // UPDATED: /wishlist/check → /customer/wishlist/check
+  const checkWishlistStatus = async () => {
+    if (!isAuthenticated()) return
+    
+    try {
+      const response = await api.get('/customer/wishlist/check', {
+        params: { user_id: user.id, product_id: product.id }
+      })
+      setIsInWishlist(response.data.in_wishlist)
+    } catch (error) {
+      console.error('Error checking wishlist:', error)
     }
   }
 
@@ -67,9 +89,26 @@ const ProductDetails = () => {
     addToCart(product, quantity, selectedSize, selectedColor)
   }
 
-  const handleWishlistToggle = () => {
-    setIsInWishlist(!isInWishlist)
-    toast.success(isInWishlist ? 'Removed from wishlist' : 'Added to wishlist')
+  // UPDATED: /wishlist/toggle → /customer/wishlist/toggle
+  const handleWishlistToggle = async () => {
+    if (!isAuthenticated()) {
+      toast.error('Please login to add to wishlist')
+      navigate('/login')
+      return
+    }
+
+    try {
+      const response = await api.post('/customer/wishlist/toggle', {
+        user_id: user.id,
+        product_id: product.id
+      })
+      
+      setIsInWishlist(response.data.action === 'added')
+      toast.success(response.data.message)
+    } catch (error) {
+      console.error('Error toggling wishlist:', error)
+      toast.error('Failed to update wishlist')
+    }
   }
 
   if (loading) {

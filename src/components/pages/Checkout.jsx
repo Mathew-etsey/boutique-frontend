@@ -98,9 +98,7 @@ const Checkout = () => {
     'Upper West'
   ]
 
-  // REMOVED: getDeliveryFee() function
-  // REMOVED: deliveryFee variable
-  const totalWithDelivery = cartTotal // UPDATED: removed + deliveryFee
+  const totalWithDelivery = cartTotal
 
   const payWithPaystack = (order) => {
     if (!window.PaystackPop) {
@@ -188,10 +186,13 @@ const Checkout = () => {
     setLoading(true)
 
     try {
+      // ===== UPDATED: Include size and color in order items =====
       const items = cartItems.map(item => ({
         product_id: item.id,
         quantity: item.quantity,
-        price: item.price
+        price: item.price,
+        size: item.size || null,    // ← ADDED
+        color: item.color || null,  // ← ADDED
       }))
 
       const orderDataPayload = {
@@ -367,8 +368,8 @@ const Checkout = () => {
                       checked={deliveryMethod === 'pickup'}
                       onChange={(e) => setDeliveryMethod(e.target.value)}
                       title="Pickup"
-                      //subtitle="Collect from our boutique"//////
-                     //// price="FREE"
+                      subtitle="Collect from our boutique"
+                      price="FREE"
                       priceClass="text-emerald-700"
                     />
                     <RadioCard
@@ -378,8 +379,8 @@ const Checkout = () => {
                       onChange={(e) => setDeliveryMethod(e.target.value)}
                       title="Delivery"
                       subtitle="Delivered to your address"
-                      //////price="Free" // UPDATED: Changed to "Free"
-                      priceClass="text-emerald-700" // UPDATED: Changed to green
+                      price="Free"
+                      priceClass="text-emerald-700"
                     />
                     <RadioCard
                       name="delivery"
@@ -388,8 +389,8 @@ const Checkout = () => {
                       onChange={(e) => setDeliveryMethod(e.target.value)}
                       title="Express Delivery"
                       subtitle="Same day delivery (within Accra)"
-                      //////price="Free" // UPDATED: Changed to "Free"
-                      priceClass="text-emerald-700" // UPDATED: Changed to green
+                      price="Free"
+                      priceClass="text-emerald-700"
                     />
                   </div>
                 </div>
@@ -453,7 +454,7 @@ const Checkout = () => {
                   disabled={loading}
                   className="w-full bg-gold text-ink py-4 rounded-sm font-mono text-xs uppercase tracking-[0.25em] hover:bg-gold-light active:scale-[0.98] animate-glow-pulse transition-all duration-300 disabled:opacity-50 disabled:animate-none"
                 >
-                  {loading ? 'Processing...' : `Place Order · GH₵ ${cartTotal.toFixed(2)}`} {/* UPDATED: Changed to cartTotal */}
+                  {loading ? 'Processing...' : `Place Order · GH₵ ${cartTotal.toFixed(2)}`}
                 </button>
               </form>
             </div>
@@ -483,6 +484,16 @@ const Checkout = () => {
                       </div>
                       <div className="flex-1 min-w-0">
                         <p className="text-bone truncate">{item.name}</p>
+                        {item.size && (
+                          <p className="text-bone/40 text-[10px] font-mono">
+                            Size: {item.size}
+                          </p>
+                        )}
+                        {item.color && (
+                          <p className="text-bone/40 text-[10px] font-mono">
+                            Color: {item.color}
+                          </p>
+                        )}
                         <p className="text-bone/40 text-xs font-mono">
                           {item.quantity} × GH₵ {item.price}
                         </p>
@@ -499,7 +510,6 @@ const Checkout = () => {
                     <span className="text-bone/50">Subtotal</span>
                     <span className="font-mono text-bone">GH₵ {cartTotal.toFixed(2)}</span>
                   </div>
-                  {/* REMOVED: Delivery Fee block */}
                   <div className="border-t border-gold/15 pt-3 flex justify-between items-baseline">
                     <span className="font-mono text-[11px] uppercase tracking-wide text-bone/60">Total</span>
                     <span className="text-gold font-display text-xl font-bold">GH₵ {totalWithDelivery.toFixed(2)}</span>

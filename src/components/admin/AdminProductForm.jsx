@@ -16,11 +16,22 @@ const AdminProductForm = () => {
     description: '',
     price: '',
     stock_quantity: '',
-    is_featured: false,  // ← ADDED
+    is_featured: false,
     images: null
   })
   const [imagePreview, setImagePreview] = useState(null)
   const [existingImage, setExistingImage] = useState(null)
+
+  // ===== VARIATIONS STATE =====
+  const [variations, setVariations] = useState([])
+  const [variationsLoading, setVariationsLoading] = useState(false)
+  const [newVariation, setNewVariation] = useState({
+    size: '',
+    color: '',
+    quantity: ''
+  })
+  const [addingVariation, setAddingVariation] = useState(false)
+  const [deletingVariation, setDeletingVariation] = useState(null)
 
   useEffect(() => {
     const fetchCategories = async () => {
@@ -50,12 +61,14 @@ const AdminProductForm = () => {
             description: product.description || '',
             price: product.price || '',
             stock_quantity: product.stock_quantity || '',
-            is_featured: product.is_featured == 1,  // ← ADDED
+            is_featured: product.is_featured == 1,
             images: null
           })
           if (product.images && product.images.length > 0) {
             setExistingImage(product.images[0].image_url)
           }
+          // Fetch variations for this product
+          fetchVariations()
         } catch (error) {
           console.error('Error fetching product:', error)
           toast.error('Failed to load product')
@@ -65,9 +78,91 @@ const AdminProductForm = () => {
     }
   }, [id, isEditing])
 
+  // ===== FETCH VARIATIONS =====
+  const fetchVariations = async () => {
+    if (!id) return
+    setVariationsLoading(true)
+    try {
+      const response = await api.get('/admin/product-variations', {
+        params: { product_id: id }
+      })
+      setVariations(response.data.data || [])
+    } catch (error) {
+      console.error('Error fetching variations:', error)
+    } finally {
+      setVariationsLoading(false)
+    }
+  }
+
+  // ===== ADD VARIATION =====
+  const handleAddVariation = async (e) => {
+    e.preventDefault()
+    
+    if (!newVariation.size || !newVariation.color || !newVariation.quantity) {
+      toast.error('Please fill in all variation fields')
+      return
+    }
+
+    setAddingVariation(true)
+    try {
+      const response = await api.post('/admin/product-variations', {
+        product_id: id,
+        size: newVariation.size,
+        color: newVariation.color,
+        quantity: parseInt(newVariation.quantity)
+      })
+
+      if (response.data.success) {
+        toast.success('Variation added successfully!')
+        setVariations([...variations, response.data.data])
+        setNewVariation({ size: '', color: '', quantity: '' })
+        // Update stock quantity in form
+        setFormData(prev => ({
+          ...prev,
+          stock_quantity: parseInt(prev.stock_quantity) + parseInt(newVariation.quantity)
+        }))
+      }
+    } catch (error) {
+      console.error('Error adding variation:', error)
+      toast.error(error.response?.data?.message || 'Failed to add variation')
+    } finally {
+      setAddingVariation(false)
+    }
+  }
+
+  // ===== DELETE VARIATION =====
+  const handleDeleteVariation = async (variationId) => {
+    if (!window.confirm('Are you sure you want to delete this variation?')) return
+
+    setDeletingVariation(variationId)
+    try {
+      await api.delete(`/admin/product-variations/${variationId}`)
+      const deletedVariation = variations.find(v => v.id === variationId)
+      setVariations(variations.filter(v => v.id !== variationId))
+      // Update stock quantity in form
+      if (deletedVariation) {
+        setFormData(prev => ({
+          ...prev,
+          stock_quantity: parseInt(prev.stock_quantity) - parseInt(deletedVariation.quantity)
+        }))
+      }
+      toast.success('Variation deleted successfully!')
+    } catch (error) {
+      console.error('Error deleting variation:', error)
+      toast.error('Failed to delete variation')
+    } finally {
+      setDeletingVariation(null)
+    }
+  }
+
   const handleChange = (e) => {
     const { name, value } = e.target
     setFormData(prev => ({ ...prev, [name]: value }))
+  }
+
+  const handleVariationChange = (e) => {
+    const { name, value } = e.target
+    setNewVariation(prev => ({ ...prev, [name]: value }))
   }
 
   const compressImage = (file) => {
@@ -162,7 +257,7 @@ const AdminProductForm = () => {
       data.append('description', formData.description || '')
       data.append('price', formData.price)
       data.append('stock_quantity', formData.stock_quantity)
-      data.append('is_featured', formData.is_featured ? '1' : '0')  // ← ADDED
+      data.append('is_featured', formData.is_featured ? '1' : '0')
 
       if (formData.images && formData.images instanceof File) {
         data.append('images', formData.images)
@@ -316,6 +411,113 @@ const AdminProductForm = () => {
             </span>
           </div>
         </div>
+
+        {/* ===== PRODUCT VARIATIONS SECTION ===== */}
+        {isEditing && (
+          <div className="border-t border-ink/10 pt-6 mt-2">
+            <h3 className="font-mono text-[11px] uppercase tracking-[0.2em] text-ink/60 mb-4">
+              Product Variations
+            </h3>
+
+            {/* Add Variation Form */}
+            <div className="grid grid-cols-1 sm:grid-cols-4 gap-3 mb-4">
+              <div>
+                <label className="block font-mono text-[10px] uppercase tracking-wide text-ink/40 mb-1">
+                  Size
+                </label>
+                <input
+                  type="text"
+                  name="size"
+                  value={newVariation.size}
+                  onChange={handleVariationChange}
+                  placeholder="e.g., S, M, L"
+                  className={`${inputClass} text-sm pb-2`}
+                />
+              </div>
+              <div>
+                <label className="block font-mono text-[10px] uppercase tracking-wide text-ink/40 mb-1">
+                  Color
+                </label>
+                <input
+                  type="text"
+                  name="color"
+                  value={newVariation.color}
+                  onChange={handleVariationChange}
+                  placeholder="e.g., Black, White"
+                  className={`${inputClass} text-sm pb-2`}
+                />
+              </div>
+              <div>
+                <label className="block font-mono text-[10px] uppercase tracking-wide text-ink/40 mb-1">
+                  Quantity
+                </label>
+                <input
+                  type="number"
+                  name="quantity"
+                  value={newVariation.quantity}
+                  onChange={handleVariationChange}
+                  placeholder="0"
+                  min="0"
+                  className={`${inputClass} text-sm pb-2`}
+                />
+              </div>
+              <div className="flex items-end">
+                <button
+                  type="button"
+                  onClick={handleAddVariation}
+                  disabled={addingVariation}
+                  className="w-full bg-gold text-ink px-4 py-2 rounded-sm font-mono text-xs uppercase tracking-[0.15em] hover:bg-gold-light active:scale-[0.97] transition-all duration-300 disabled:opacity-50"
+                >
+                  {addingVariation ? 'Adding...' : 'Add'}
+                </button>
+              </div>
+            </div>
+
+            {/* Variations List */}
+            {variationsLoading ? (
+              <div className="text-center py-4">
+                <div className="animate-spin rounded-full h-5 w-5 border-2 border-gold border-t-transparent mx-auto"></div>
+                <p className="mt-2 font-mono text-[10px] uppercase tracking-wide text-ink/40">Loading variations...</p>
+              </div>
+            ) : variations.length === 0 ? (
+              <p className="text-sm text-ink/40 text-center py-4 border border-ink/10 rounded-sm">
+                No variations added yet
+              </p>
+            ) : (
+              <div className="overflow-x-auto">
+                <table className="w-full text-sm">
+                  <thead>
+                    <tr className="border-b border-ink/10">
+                      <th className="text-left font-mono text-[10px] uppercase tracking-wide text-ink/40 py-2">Size</th>
+                      <th className="text-left font-mono text-[10px] uppercase tracking-wide text-ink/40 py-2">Color</th>
+                      <th className="text-right font-mono text-[10px] uppercase tracking-wide text-ink/40 py-2">Quantity</th>
+                      <th className="text-right font-mono text-[10px] uppercase tracking-wide text-ink/40 py-2">Action</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {variations.map((variation) => (
+                      <tr key={variation.id} className="border-b border-ink/5">
+                        <td className="py-2 font-mono text-sm">{variation.size}</td>
+                        <td className="py-2 font-mono text-sm">{variation.color}</td>
+                        <td className="py-2 font-mono text-sm text-right">{variation.quantity}</td>
+                        <td className="py-2 text-right">
+                          <button
+                            type="button"
+                            onClick={() => handleDeleteVariation(variation.id)}
+                            disabled={deletingVariation === variation.id}
+                            className="text-ink/30 hover:text-oxblood font-mono text-[10px] uppercase tracking-wide transition disabled:opacity-50"
+                          >
+                            {deletingVariation === variation.id ? '...' : 'Delete'}
+                          </button>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            )}
+          </div>
+        )}
 
         <div>
           <label className="block font-mono text-[11px] uppercase tracking-[0.2em] text-ink/60 mb-2">

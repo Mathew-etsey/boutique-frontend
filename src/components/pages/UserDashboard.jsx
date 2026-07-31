@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import { useAuth } from '../../context/AuthContext'
-import api from '../../services/api'
+import api, { getImageUrl } from '../../services/api'
 import toast from 'react-hot-toast'
 import PageTitle from '../common/PageTitle'
 import {
@@ -12,7 +12,8 @@ import {
   CheckCircleIcon,
   ClockIcon,
   XCircleIcon,
-  TruckIcon
+  TruckIcon,
+  TrashIcon
 } from '@heroicons/react/24/outline'
 import Reveal from '../common/Reveal'
 
@@ -33,6 +34,11 @@ const UserDashboard = () => {
   const [loading, setLoading] = useState(true)
   const [activeTab, setActiveTab] = useState('orders')
 
+  // Wishlist state
+  const [wishlist, setWishlist] = useState([])
+  const [wishlistLoading, setWishlistLoading] = useState(false)
+  const [removingWishlist, setRemovingWishlist] = useState(null)
+
   const [profileData, setProfileData] = useState({
     name: user?.name || '',
     phone: user?.phone || ''
@@ -50,6 +56,13 @@ const UserDashboard = () => {
     fetchOrders()
   }, [])
 
+  // Fetch wishlist when tab changes to wishlist
+  useEffect(() => {
+    if (activeTab === 'wishlist') {
+      fetchWishlist()
+    }
+  }, [activeTab])
+
   const fetchOrders = async () => {
     try {
       const response = await api.get('/customer/orders')
@@ -58,6 +71,35 @@ const UserDashboard = () => {
       console.error('Error fetching orders:', error)
     } finally {
       setLoading(false)
+    }
+  }
+
+  const fetchWishlist = async () => {
+    setWishlistLoading(true)
+    try {
+      const response = await api.get('/customer/wishlist', {
+        params: { user_id: user.id }
+      })
+      setWishlist(response.data.data || [])
+    } catch (error) {
+      console.error('Error fetching wishlist:', error)
+      toast.error('Failed to load wishlist')
+    } finally {
+      setWishlistLoading(false)
+    }
+  }
+
+  const handleRemoveFromWishlist = async (wishlistId) => {
+    setRemovingWishlist(wishlistId)
+    try {
+      await api.delete(`/customer/wishlist/${wishlistId}`)
+      setWishlist(wishlist.filter(item => item.id !== wishlistId))
+      toast.success('Removed from wishlist')
+    } catch (error) {
+      console.error('Error removing from wishlist:', error)
+      toast.error('Failed to remove from wishlist')
+    } finally {
+      setRemovingWishlist(null)
     }
   }
 
@@ -129,7 +171,7 @@ const UserDashboard = () => {
   const tabs = [
     { key: 'orders', label: 'Orders', icon: ShoppingBagIcon, count: orders.length },
     { key: 'profile', label: 'Profile', icon: UserIcon },
-    { key: 'wishlist', label: 'Wishlist', icon: HeartIcon },
+    { key: 'wishlist', label: 'Wishlist', icon: HeartIcon, count: wishlist.length },
   ]
 
   if (loading) {
@@ -393,16 +435,62 @@ const UserDashboard = () => {
 
               {activeTab === 'wishlist' && (
                 <Reveal delay={60} className="bg-white border border-ink/10 p-5 sm:p-7">
-                  <h2 className="text-xl font-display font-bold text-ink mb-6">My Wishlist</h2>
-                  <div className="text-center py-14">
-                    <div className="w-14 h-14 rounded-full border border-gold/40 flex items-center justify-center mx-auto mb-4 animate-float">
-                      <HeartIcon className="w-6 h-6 text-gold-dark" />
+                  <h2 className="text-xl font-display font-bold text-ink mb-6">
+                    My Wishlist
+                    {wishlist.length > 0 && (
+                      <span className="ml-2 text-sm font-mono font-normal text-ink/40">
+                        ({wishlist.length} items)
+                      </span>
+                    )}
+                  </h2>
+
+                  {wishlistLoading ? (
+                    <div className="text-center py-12">
+                      <div className="animate-spin rounded-full h-8 w-8 border-2 border-gold border-t-transparent mx-auto"></div>
+                      <p className="mt-4 font-mono text-xs uppercase tracking-[0.2em] text-ink/50">Loading wishlist...</p>
                     </div>
-                    <p className="text-ink/50 text-sm">Your wishlist is empty</p>
-                    <Link to="/shop" className="font-mono text-xs uppercase tracking-[0.2em] text-gold-dark hover:text-gold mt-3 inline-block transition">
-                      Browse Products →
-                    </Link>
-                  </div>
+                  ) : wishlist.length === 0 ? (
+                    <div className="text-center py-14">
+                      <div className="w-14 h-14 rounded-full border border-gold/40 flex items-center justify-center mx-auto mb-4 animate-float">
+                        <HeartIcon className="w-6 h-6 text-gold-dark" />
+                      </div>
+                      <p className="text-ink/50 text-sm mb-3">Your wishlist is empty</p>
+                      <Link to="/shop" className="font-mono text-xs uppercase tracking-[0.2em] text-gold-dark hover:text-gold transition">
+                        Browse Products →
+                      </Link>
+                    </div>
+                  ) : (
+                    <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
+                      {wishlist.map((item) => (
+                        <div key={item.id} className="bg-white border border-ink/10 rounded-sm hover:border-gold/40 transition group relative">
+                          <Link to={`/product/${item.product.id}`} className="block p-3">
+                            <div className="aspect-square overflow-hidden bg-ink/5 rounded-sm">
+                              {item.product.images && item.product.images.length > 0 ? (
+                                <img
+                                  src={getImageUrl(item.product.images[0].image_url)}
+                                  alt={item.product.name}
+                                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                                />
+                              ) : (
+                                <div className="w-full h-full flex items-center justify-center text-ink/20 text-xs">
+                                  No Image
+                                </div>
+                              )}
+                            </div>
+                            <h3 className="font-display text-ink text-sm mt-2 line-clamp-1">{item.product.name}</h3>
+                            <p className="font-mono text-sm text-gold-dark">GH₵ {item.product.price}</p>
+                          </Link>
+                          <button
+                            onClick={() => handleRemoveFromWishlist(item.id)}
+                            disabled={removingWishlist === item.id}
+                            className="absolute top-2 right-2 p-1.5 bg-white/90 backdrop-blur-sm rounded-full shadow-md hover:shadow-lg transition-all duration-300 disabled:opacity-50"
+                          >
+                            <TrashIcon className="w-4 h-4 text-ink/40 hover:text-oxblood transition-colors" />
+                          </button>
+                        </div>
+                      ))}
+                    </div>
+                  )}
                 </Reveal>
               )}
             </div>
