@@ -73,7 +73,7 @@ export const CartProvider = ({ children }) => {
             </div>
           </div>,
           {
-            duration: 8000,
+            duration: 4000,
             style: {
               background: '#0B0B0C',
               color: '#EDE6D8',
