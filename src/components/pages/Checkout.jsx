@@ -369,7 +369,7 @@ const Checkout = () => {
                       onChange={(e) => setDeliveryMethod(e.target.value)}
                       title="Pickup"
                       subtitle="Collect from our boutique"
-                      price="FREE"
+                      //
                       priceClass="text-emerald-700"
                     />
                     <RadioCard
@@ -379,7 +379,7 @@ const Checkout = () => {
                       onChange={(e) => setDeliveryMethod(e.target.value)}
                       title="Delivery"
                       subtitle="Delivered to your address"
-                      price="Free"
+                      //
                       priceClass="text-emerald-700"
                     />
                     <RadioCard
@@ -389,7 +389,7 @@ const Checkout = () => {
                       onChange={(e) => setDeliveryMethod(e.target.value)}
                       title="Express Delivery"
                       subtitle="Same day delivery (within Accra)"
-                      price="Free"
+                      //
                       priceClass="text-emerald-700"
                     />
                   </div>
