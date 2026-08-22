@@ -60,7 +60,7 @@ const About = () => {
             About MASTERPIECE
           </h1>
           <p className="text-bone/70 text-sm sm:text-base mt-3 max-w-lg">
-            Redefining premium fashion with timeless elegance.
+            Redefining premium fashion with timeless elegance. We don't just sell fashion; We create masterpieces.
           </p>
         </div>
       </div>
