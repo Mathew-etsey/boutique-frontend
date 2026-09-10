@@ -1,6 +1,7 @@
 import React from 'react'
 import { Link } from 'react-router-dom'
 import { FaInstagram, FaTiktok, FaSnapchat, FaWhatsapp } from 'react-icons/fa'
+import { FaXTwitter } from 'react-icons/fa6'
 import logoWhite from '../../assets/logo-white.png'
 
 const SOCIALS = [
@@ -8,6 +9,7 @@ const SOCIALS = [
   { name: 'TikTok', url: 'https://www.tiktok.com/@masterpiece.gh_', icon: FaTiktok },
   { name: 'Snapchat', url: 'https://www.snapchat.com/add/masterpiece.gh', icon: FaSnapchat },
   { name: 'WhatsApp', url: 'https://wa.me/233204082142', icon: FaWhatsapp },
+  { name: 'X', url: 'https://x.com/masterpiecegh_', icon: FaXTwitter },
 ]
 
 const Footer = () => {
